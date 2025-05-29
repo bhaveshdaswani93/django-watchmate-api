@@ -1,0 +1,56 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+
+# Django
+# db.sqlite3
+# *.sqlite3
+*.log
+*.pot
+*.pyc
+*.mo
+*.swp
+media/
+staticfiles/
+static/
+.env
+.env.*
+
+# VS Code
+.vscode/
+
+# PyCharm
+.idea/
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Test/coverage
+.coverage
+htmlcov/
+.tox/
+.nox/
+.cache/
+.pytest_cache/
+*.cover
+*.log
+
+# Migrations (optional, if you don't want to track them)
+# **/migrations/*.py
+# **/migrations/*.pyc
+
+# pipenv/poetry
+Pipfile.lock
+poetry.lock
+
+# Others
+*.bak
+*.tmp
