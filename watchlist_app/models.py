@@ -1,10 +1,19 @@
 from django.db import models
 
 # Create your models here.
-class Movie(models.Model):
+class StreamPlatform(models.Model):
     name = models.CharField(max_length=100)
-    description = models.TextField()
-    active = models.BooleanField(default=True)
+    about = models.CharField(max_length=255)
+    website = models.URLField()
 
     def __str__(self):
-        return f"{self.name}"
+        return f"{self.name} ({self.website})"
+
+class WatchList(models.Model):
+    title = models.CharField(max_length=100)
+    description = models.TextField()
+    active = models.BooleanField(default=True)
+    created = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.title}"

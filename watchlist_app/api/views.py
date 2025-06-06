@@ -1,5 +1,5 @@
 # Create your views here.
-from watchlist_app.models import Movie
+from watchlist_app.models import WatchList
 from watchlist_app.api.serializers import MovieSerializer
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
@@ -8,8 +8,8 @@ from rest_framework.views import APIView
 
 class MovieListAV(APIView):
     def get(self, request):
-        movies = Movie.objects.all()
-        serializer = MovieSerializer(movies, many=True)
+        watch_list = WatchList.objects.all()
+        serializer = MovieSerializer(watch_list, many=True)
         data = {'data': serializer.data}
         return Response(data)
 
