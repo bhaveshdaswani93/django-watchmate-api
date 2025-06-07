@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from watchlist_app.models import Movie
+from watchlist_app.models import WatchList, StreamPlatform
 
 
 
@@ -34,21 +34,36 @@ class MovieSerializer(serializers.Serializer):
             raise serializers.ValidationError("Name is too short")
         return value
 """
-class MovieSerializer(serializers.ModelSerializer):
-    name_length = serializers.SerializerMethodField()
-    def get_name_length(self, obj):
-        return len(obj.name)
+class WatchListSerializer(serializers.ModelSerializer):
+    title_length = serializers.SerializerMethodField()
+    def get_title_length(self, obj):
+        return len(obj.title)
     
     class Meta:
-        model = Movie
+        model = WatchList
+        fields = '__all__'
+        # exclude = ['id', 'active']
+        extra_kwargs = {
+            'title': {'validators': [validate_min_length]},
+            'storyline': {'required': False, 'allow_blank': True}
+        }
+    
+    def validate(self, attrs):
+        if attrs.get('title') == attrs.get('storyline'):
+            raise serializers.ValidationError("Name and storyline cannot be the same")
+        return super().validate(attrs)
+
+class StreamPlatformSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = StreamPlatform
         fields = '__all__'
         # exclude = ['id', 'active']
         extra_kwargs = {
             'name': {'validators': [validate_min_length]},
-            'description': {'required': False, 'allow_blank': True}
+            'about': {'required': False, 'allow_blank': True}
         }
     
     def validate(self, attrs):
-        if attrs.get('name') == attrs.get('description'):
-            raise serializers.ValidationError("Name and description cannot be the same")
+        if attrs.get('name') == attrs.get('about'):
+            raise serializers.ValidationError("Name and about cannot be the same")
         return super().validate(attrs)

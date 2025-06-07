@@ -1,66 +1,116 @@
 # Create your views here.
-from watchlist_app.models import WatchList
-from watchlist_app.api.serializers import MovieSerializer
+from watchlist_app.models import WatchList, StreamPlatform
+from watchlist_app.api.serializers import WatchListSerializer, StreamPlatformSerializer
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from rest_framework import status
 from rest_framework.views import APIView 
 
-class MovieListAV(APIView):
+class WatchListAV(APIView):
     def get(self, request):
         watch_list = WatchList.objects.all()
-        serializer = MovieSerializer(watch_list, many=True)
+        serializer = WatchListSerializer(watch_list, many=True)
         data = {'data': serializer.data}
         return Response(data)
 
     def post(self, request):
         print("Data received:", request.data)  # Debugging line to check incoming data
-        serializer = MovieSerializer(data=request.data)
+        serializer = WatchListSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
-class MovieDetailAV(APIView):
+class WatchListDetailAV(APIView):
     def get_object(self, pk):
         try:
-            return Movie.objects.get(pk=pk)
-        except Movie.DoesNotExist:
+            return WatchList.objects.get(pk=pk)
+        except WatchList.DoesNotExist:
             return None
 
     def get(self, request, pk):
-        movie = self.get_object(pk)
-        if movie is None:
+        watch_list = self.get_object(pk)
+        if watch_list is None:
             return Response({'error': 'Movie not found'}, status=status.HTTP_404_NOT_FOUND)
         
-        serializer = MovieSerializer(movie)
+        serializer = WatchListSerializer(watch_list)
         data = {'data': serializer.data}
         return Response(data)
 
     def put(self, request, pk):
-        movie = self.get_object(pk)
-        if movie is None:
-            return Response({'error': 'Movie not found'}, status=status.HTTP_404_NOT_FOUND)
+        watch_list = self.get_object(pk)
+        if watch_list is None:
+            return Response({'error': 'Watch List not found'}, status=status.HTTP_404_NOT_FOUND)
         
-        serializer = MovieSerializer(movie, data=request.data)
+        serializer = WatchListSerializer(watch_list, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk):
-        movie = self.get_object(pk)
-        if movie is None:
-            return Response({'error': 'Movie not found'}, status=status.HTTP_404_NOT_FOUND)
+        watch_list = self.get_object(pk)
+        if watch_list is None:
+            return Response({'error': 'Watch List not found'}, status=status.HTTP_404_NOT_FOUND)
         
-        movie.delete()
+        watch_list.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+class StreamPlatformListAV(APIView):
+    def get(self, request):
+        platforms = StreamPlatform.objects.all()
+        serializer = StreamPlatformSerializer(platforms, many=True)
+        data = {'data': serializer.data}
+        return Response(data)
+
+    def post(self, request):
+        serializer = StreamPlatformSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+
+class StreamPlatformDetailAV(APIView):
+    def get_object(self, pk):
+        try:
+            return StreamPlatform.objects.get(pk=pk)
+        except StreamPlatform.DoesNotExist:
+            return None
+
+    def get(self, request, pk):
+        platform = self.get_object(pk)
+        if platform is None:
+            return Response({'error': 'Stream Platform not found'}, status=status.HTTP_404_NOT_FOUND)
+        
+        serializer = StreamPlatformSerializer(platform)
+        data = {'data': serializer.data}
+        return Response(data)
+
+    def put(self, request, pk):
+        platform = self.get_object(pk)
+        if platform is None:
+            return Response({'error': 'Stream Platform not found'}, status=status.HTTP_404_NOT_FOUND)
+        
+        serializer = StreamPlatformSerializer(platform, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk):
+        platform = self.get_object(pk)
+        if platform is None:
+            return Response({'error': 'Stream Platform not found'}, status=status.HTTP_404_NOT_FOUND)
+        
+        platform.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 # @api_view(['GET', 'POST'])
 # def movie_list(request):
 #     if request.method == 'POST':
 #         print("Data received:", request.data)  # Debugging line to check incoming data
-#         serializer = MovieSerializer(data=request.data)
+#         serializer = WatchListSerializer(data=request.data)
 #         if serializer.is_valid():
 #             serializer.save()
 #             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -68,7 +118,7 @@ class MovieDetailAV(APIView):
     
 #     # If the request method is GET, return the list of movies
 #     movies = Movie.objects.all()
-#     serializer = MovieSerializer(movies, many=True)
+#     serializer = WatchListSerializer(movies, many=True)
 #     data = {'data': serializer.data}
 #     return Response(data)
 
@@ -80,7 +130,7 @@ class MovieDetailAV(APIView):
 #         return Response({'error': 'Movie not found'}, status=status.HTTP_404_NOT_FOUND)
     
 #     if request.method == 'PUT':
-#         serializer = MovieSerializer(movie, data=request.data)
+#         serializer = WatchListSerializer(movie, data=request.data)
 #         if serializer.is_valid():
 #             serializer.save()
 #             return Response(serializer.data, status=status.HTTP_200_OK)
@@ -89,6 +139,6 @@ class MovieDetailAV(APIView):
 #         movie.delete()
 #         return Response(status=status.HTTP_204_NO_CONTENT)
 
-#     serializer = MovieSerializer(movie)
+#     serializer = WatchListSerializer(movie)
 #     data = {'data': serializer.data}
 #     return Response(data)
