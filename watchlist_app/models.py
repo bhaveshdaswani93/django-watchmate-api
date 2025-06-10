@@ -18,3 +18,14 @@ class WatchList(models.Model):
 
     def __str__(self):
         return f"{self.title}"
+
+class Review(models.Model):
+    # review_user = models.CharField(max_length=50)
+    rating = models.FloatField()
+    description = models.TextField()
+    active = models.BooleanField(default=True)
+    created = models.DateTimeField(auto_now_add=True)
+    watchlist = models.ForeignKey(WatchList, related_name='reviews', on_delete=models.CASCADE, null=True)
+
+    def __str__(self):
+        return f"{self.rating} - {self.watchlist.title} ({self.created})"

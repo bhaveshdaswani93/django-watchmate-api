@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from watchlist_app.models import WatchList, StreamPlatform
+from watchlist_app.models import WatchList, StreamPlatform, Review
 
 
 
@@ -34,8 +34,25 @@ class MovieSerializer(serializers.Serializer):
             raise serializers.ValidationError("Name is too short")
         return value
 """
+
+class ReviewSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Review  # Using the through model for many-to-many relationship
+        fields = '__all__'
+        # exclude = ['id', 'active']
+        extra_kwargs = {
+            # 'rating': {'validators': [validate_min_length]},
+            'description': {'required': False, 'allow_blank': True}
+        }
+    
+    def validate(self, attrs):
+        if attrs.get('rating') < 1 or attrs.get('rating') > 5:
+            raise serializers.ValidationError("Rating must be between 1 and 5")
+        return super().validate(attrs)
+
 class WatchListSerializer(serializers.ModelSerializer):
     title_length = serializers.SerializerMethodField()
+    reviews = ReviewSerializer(many=True, read_only=True)
     def get_title_length(self, obj):
         return len(obj.title)
     
