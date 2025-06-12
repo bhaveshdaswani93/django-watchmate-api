@@ -7,6 +7,7 @@ from rest_framework import status
 from rest_framework.views import APIView 
 from rest_framework import generics 
 from rest_framework import mixins 
+from rest_framework import viewsets 
 
 class ReviewList(generics.ListCreateAPIView):
     # queryset = Review.objects.all()
@@ -23,6 +24,16 @@ class ReviewList(generics.ListCreateAPIView):
         # if watchlist_id:
             # return self.queryset.filter(watchlist__id=watchlist_id)
         # return self.queryset
+    
+    def perform_create(self, serializer):
+        """
+        Override the perform_create method to set the watchlist
+        item for the review.
+        """
+        watchlist_id = self.kwargs.get('pk')
+        watchlist_item = WatchList.objects.get(id=watchlist_id)
+        serializer.save(watchlist=watchlist_item)
+
 
 
 class ReviewDetail(generics.RetrieveUpdateDestroyAPIView):
@@ -101,6 +112,32 @@ class WatchListDetailAV(APIView):
         
         watch_list.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+class StreamPlatformViewSet(viewsets.ViewSet):
+    def list (self, request):
+        platforms = StreamPlatform.objects.all()
+        serializer = StreamPlatformSerializer(platforms, many=True, context={'request': request})
+        data = {'data': serializer.data}
+        return Response(data)
+
+    def create(self, request):
+        serializer = StreamPlatformSerializer(data=request.data, context={'request': request})
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def retrieve(self, request, pk=None):
+        try:
+            platform = StreamPlatform.objects.get(pk=pk)
+        except StreamPlatform.DoesNotExist:
+            return Response({'error': 'Stream Platform not found'}, status=status.HTTP_404_NOT_FOUND)
+        
+        serializer = StreamPlatformSerializer(platform, context={'request': request})
+        data = {'data': serializer.data}
+        return Response(data)
+
+    
 
 class StreamPlatformListAV(APIView):
     def get(self, request):
