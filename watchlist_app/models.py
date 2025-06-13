@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 # Create your models here.
 class StreamPlatform(models.Model):
@@ -26,6 +27,9 @@ class Review(models.Model):
     active = models.BooleanField(default=True)
     created = models.DateTimeField(auto_now_add=True)
     watchlist = models.ForeignKey(WatchList, related_name='reviews', on_delete=models.CASCADE, null=True)
+    review_user = models.ForeignKey(User, related_name='reviews', on_delete=models.CASCADE, null=True)
+    class Meta:
+        unique_together = ('watchlist', 'review_user')
 
     def __str__(self):
         return f"{self.rating} - {self.watchlist.title} ({self.created})"

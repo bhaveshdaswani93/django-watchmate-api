@@ -36,6 +36,8 @@ class MovieSerializer(serializers.Serializer):
 """
 
 class ReviewSerializer(serializers.ModelSerializer):
+    review_user = serializers.StringRelatedField(read_only=True)  # Assuming you want to show the username
+
     class Meta:
         model = Review  # Using the through model for many-to-many relationship
         fields = '__all__'

@@ -8,6 +8,7 @@ from rest_framework.views import APIView
 from rest_framework import generics 
 from rest_framework import mixins 
 from rest_framework import viewsets 
+from rest_framework.exceptions import ValidationError
 
 class ReviewList(generics.ListCreateAPIView):
     # queryset = Review.objects.all()
@@ -32,7 +33,12 @@ class ReviewList(generics.ListCreateAPIView):
         """
         watchlist_id = self.kwargs.get('pk')
         watchlist_item = WatchList.objects.get(id=watchlist_id)
-        serializer.save(watchlist=watchlist_item)
+        user = self.request.user  # Get the user from the request
+        # Check if the user has already reviewed this watchlist item
+        if Review.objects.filter(watchlist=watchlist_item, review_user=user).exists():
+            raise ValidationError("You have already reviewed this watchlist item.")
+
+        serializer.save(watchlist=watchlist_item, review_user=user)
 
 
 
@@ -112,6 +118,17 @@ class WatchListDetailAV(APIView):
         
         watch_list.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+    
+class StreamPlatformModelViewSet(viewsets.ModelViewSet):
+    queryset = StreamPlatform.objects.all()
+    serializer_class = StreamPlatformSerializer
+    lookup_field = 'pk'  # Default is 'pk', but can be changed to 'slug' or any other field if needed
+
+    # def get_serializer_context(self):
+    #     return {'request': self.request}
+    
+    # def perform_create(self, serializer):
+    #     serializer.save()
 
 class StreamPlatformViewSet(viewsets.ViewSet):
     def list (self, request):

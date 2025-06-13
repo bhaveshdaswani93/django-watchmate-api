@@ -4,7 +4,7 @@ from watchlist_app.api import views
 
 # Create a router and register our viewsets with it.
 router = DefaultRouter()
-router.register('platforms', views.StreamPlatformViewSet, basename='platforms')
+router.register('platforms', views.StreamPlatformModelViewSet, basename='platforms')
 
 
 urlpatterns = [
