@@ -13,7 +13,7 @@ urlpatterns = [
     path('', include(router.urls)),  # Include the router's URLs
     # path('platforms', views.StreamPlatformListAV.as_view(), name='stream-platform-list'),
     # path('platforms/<int:pk>', views.StreamPlatformDetailAV.as_view(), name='streamplatform-detail'),
-    path('stream/<int:pk>/reviews', views.ReviewList.as_view(), name='review-list'),
-    path('stream/reviews/<int:pk>', views.ReviewDetail.as_view(), name='review-detail'),
+    path('<int:pk>/reviews', views.ReviewList.as_view(), name='review-list'),
+    path('reviews/<int:pk>', views.ReviewDetail.as_view(), name='review-detail'),
 
 ]

@@ -9,10 +9,14 @@ from rest_framework import generics
 from rest_framework import mixins 
 from rest_framework import viewsets 
 from rest_framework.exceptions import ValidationError
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
+
+from watchlist_app.api.permissions import IsOwnerOrReadOnly, IsAdminOrReadOnly
 
 class ReviewList(generics.ListCreateAPIView):
     # queryset = Review.objects.all()
     serializer_class = ReviewSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]  # Allow unauthenticated users to read, but authenticated users to create
 
     def get_queryset(self):
         """
@@ -45,6 +49,7 @@ class ReviewList(generics.ListCreateAPIView):
 class ReviewDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
+    permission_classes = [IsOwnerOrReadOnly]  # Custom permission to allow only the owner to update or delete
 
 # class ReviewList(mixins.ListModelMixin, mixins.CreateModelMixin, generics.GenericAPIView):
 #     queryset = Review.objects.all()
@@ -70,6 +75,7 @@ class ReviewDetail(generics.RetrieveUpdateDestroyAPIView):
 #         return self.destroy(request, *args, **kwargs)
 
 class WatchListAV(APIView):
+    permission_classes = [IsAdminOrReadOnly]  # Allow unauthenticated users to read, but authenticated users to create
     def get(self, request):
         watch_list = WatchList.objects.all()
         serializer = WatchListSerializer(watch_list, many=True)
@@ -120,6 +126,7 @@ class WatchListDetailAV(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
     
 class StreamPlatformModelViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]  # Add your permission classes here if needed
     queryset = StreamPlatform.objects.all()
     serializer_class = StreamPlatformSerializer
     lookup_field = 'pk'  # Default is 'pk', but can be changed to 'slug' or any other field if needed
