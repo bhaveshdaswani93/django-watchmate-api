@@ -41,6 +41,10 @@ class ReviewList(generics.ListCreateAPIView):
         # Check if the user has already reviewed this watchlist item
         if Review.objects.filter(watchlist=watchlist_item, review_user=user).exists():
             raise ValidationError("You have already reviewed this watchlist item.")
+        
+        watchlist_item.num_of_ratings += 1
+        watchlist_item.avg_rating = (watchlist_item.avg_rating * (watchlist_item.num_of_ratings - 1) + serializer.validated_data['rating']) / watchlist_item.num_of_ratings
+        watchlist_item.save()
 
         serializer.save(watchlist=watchlist_item, review_user=user)
 
