@@ -16,7 +16,7 @@ from watchlist_app.api.permissions import IsOwnerOrReadOnly, IsAdminOrReadOnly
 class ReviewList(generics.ListCreateAPIView):
     # queryset = Review.objects.all()
     serializer_class = ReviewSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly]  # Allow unauthenticated users to read, but authenticated users to create
+    permission_classes = [IsAuthenticated]  # Allow unauthenticated users to read, but authenticated users to create
 
     def get_queryset(self):
         """
