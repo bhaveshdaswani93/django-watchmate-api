@@ -16,7 +16,7 @@ from watchlist_app.api.permissions import IsOwnerOrReadOnly, IsAdminOrReadOnly
 class ReviewList(generics.ListCreateAPIView):
     # queryset = Review.objects.all()
     serializer_class = ReviewSerializer
-    permission_classes = [IsAuthenticated]  # Allow unauthenticated users to read, but authenticated users to create
+    permission_classes = [IsAuthenticatedOrReadOnly]  # Allow unauthenticated users to read, but authenticated users to create
 
     def get_queryset(self):
         """
@@ -95,6 +95,7 @@ class WatchListAV(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 class WatchListDetailAV(APIView):
+    permission_classes = [IsAdminOrReadOnly]  # Allow unauthenticated users to read, but authenticated users to create
     def get_object(self, pk):
         try:
             return WatchList.objects.get(pk=pk)
@@ -130,7 +131,7 @@ class WatchListDetailAV(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
     
 class StreamPlatformModelViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsAuthenticated]  # Add your permission classes here if needed
+    permission_classes = [IsAdminOrReadOnly]  # Add your permission classes here if needed
     queryset = StreamPlatform.objects.all()
     serializer_class = StreamPlatformSerializer
     lookup_field = 'pk'  # Default is 'pk', but can be changed to 'slug' or any other field if needed
@@ -142,6 +143,7 @@ class StreamPlatformModelViewSet(viewsets.ModelViewSet):
     #     serializer.save()
 
 class StreamPlatformViewSet(viewsets.ViewSet):
+    permission_classes = [IsAdminOrReadOnly]  # Add your permission classes here if needed
     def list (self, request):
         platforms = StreamPlatform.objects.all()
         serializer = StreamPlatformSerializer(platforms, many=True, context={'request': request})
@@ -168,6 +170,7 @@ class StreamPlatformViewSet(viewsets.ViewSet):
     
 
 class StreamPlatformListAV(APIView):
+    permission_classes = [IsAdminOrReadOnly]  # Allow unauthenticated users to read, but authenticated users to create
     def get(self, request):
         platforms = StreamPlatform.objects.all()
         serializer = StreamPlatformSerializer(platforms, many=True, context={'request': request})
@@ -183,6 +186,7 @@ class StreamPlatformListAV(APIView):
     
 
 class StreamPlatformDetailAV(APIView):
+    permission_classes = [IsAdminOrReadOnly]  # Allow unauthenticated users to read, but authenticated users to create
     def get_object(self, pk):
         try:
             return StreamPlatform.objects.get(pk=pk)

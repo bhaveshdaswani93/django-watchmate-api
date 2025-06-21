@@ -5,6 +5,7 @@ from rest_framework.authtoken.models import Token
 from user_app import models
 from user_app.api.serializers import RegisterUserSerializer
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.decorators import permission_classes
 
 @api_view(['POST'])
 def register_user(request):
@@ -35,7 +36,7 @@ def register_user(request):
 
 @api_view(['POST'])
 #permission restriction for only for authenticated users
-# @
+@permission_classes([IsAuthenticated])
 def logout_user(request):
     """
     Log out a user by deleting their authentication token.
