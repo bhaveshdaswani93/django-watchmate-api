@@ -51,6 +51,15 @@ htmlcov/
 Pipfile.lock
 poetry.lock
 
+# Virtual environments
+venv/
+env/
+.venv/
+.env/
+ENV/
+env.bak/
+venv.bak/
+
 # Others
 *.bak
 *.tmp

@@ -34,4 +34,5 @@ class Review(models.Model):
         unique_together = ('watchlist', 'review_user')
 
     def __str__(self):
-        return f"{self.rating} - {self.watchlist.title} ({self.created})"
+        watchlist_title = self.watchlist.title if self.watchlist else "No WatchList"
+        return f"{self.rating} - {watchlist_title} ({self.created})"
