@@ -263,3 +263,23 @@ class StreamPlatformDetailAV(APIView):
 #     serializer = WatchListSerializer(movie)
 #     data = {'data': serializer.data}
 #     return Response(data)
+
+
+class UserReviewList(generics.ListAPIView):
+    serializer_class = ReviewSerializer
+    # permission_classes = [IsAuthenticated]  # Ensure the user is authenticated to view their reviews
+
+    def get_queryset(self):
+        """
+        We need to get username from the url parameter and then filter by id.
+        """
+        username = self.kwargs.get('username')
+        return Review.objects.filter(review_user__username=username)
+
+    # def list(self, request, *args, **kwargs):
+    #     """
+    #     Override the list method to include the user's reviews.
+    #     """
+    #     queryset = self.get_queryset()
+    #     serializer = self.get_serializer(queryset, many=True)
+    #     return Response(serializer.data)
