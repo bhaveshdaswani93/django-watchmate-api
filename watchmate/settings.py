@@ -137,7 +137,18 @@ REST_FRAMEWORK = {
         # 'rest_framework.authentication.BasicAuthentication',
         # 'rest_framework.authentication.TokenAuthentication',
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-    ]
+    ],
+    #  'DEFAULT_THROTTLE_CLASSES': [
+    #     'rest_framework.throttling.AnonRateThrottle',
+    #     'rest_framework.throttling.UserRateThrottle'
+    # ],
+    'DEFAULT_THROTTLE_RATES': {
+        'anon': '3/day',
+        'user': '10/day',
+        'watchlist': '5/minute',
+        'watchlist_detail': '2/minute',
+        'reviewlist': '1/minute',
+    }
 }
 
 SIMPLE_JWT = {

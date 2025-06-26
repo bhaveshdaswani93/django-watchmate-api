@@ -10,13 +10,17 @@ from rest_framework import mixins
 from rest_framework import viewsets 
 from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
+from rest_framework.throttling import UserRateThrottle, AnonRateThrottle, ScopedRateThrottle
 
 from watchlist_app.api.permissions import IsOwnerOrReadOnly, IsAdminOrReadOnly
+from watchlist_app.api.throttles import WatchListThrottle, WatchListDetailThrottle
 
 class ReviewList(generics.ListCreateAPIView):
     # queryset = Review.objects.all()
     serializer_class = ReviewSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]  # Allow unauthenticated users to read, but authenticated users to create
+    throttle_classes = [ScopedRateThrottle]
+    throttle_scope = 'reviewlist'   # Custom throttle scope for this view
 
     def get_queryset(self):
         """
@@ -80,6 +84,7 @@ class ReviewDetail(generics.RetrieveUpdateDestroyAPIView):
 
 class WatchListAV(APIView):
     permission_classes = [IsAdminOrReadOnly]  # Allow unauthenticated users to read, but authenticated users to create
+    throttle_classes = [WatchListThrottle]  # Apply throttling to the view
     def get(self, request):
         watch_list = WatchList.objects.all()
         serializer = WatchListSerializer(watch_list, many=True)
@@ -96,6 +101,7 @@ class WatchListAV(APIView):
     
 class WatchListDetailAV(APIView):
     permission_classes = [IsAdminOrReadOnly]  # Allow unauthenticated users to read, but authenticated users to create
+    throttle_classes = [WatchListDetailThrottle]  # Apply throttling to the view
     def get_object(self, pk):
         try:
             return WatchList.objects.get(pk=pk)
