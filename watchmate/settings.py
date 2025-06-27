@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'rest_framework',  # Django REST Framework
     'watchlist_app',  # Your custom app
     'rest_framework.authtoken',  # Token authentication
+    'django_filters',
 ]
 
 MIDDLEWARE = [

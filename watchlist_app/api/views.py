@@ -10,6 +10,7 @@ from rest_framework import mixins
 from rest_framework import viewsets 
 from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
+from django_filters import rest_framework as filters
 from rest_framework.throttling import UserRateThrottle, AnonRateThrottle, ScopedRateThrottle
 
 from watchlist_app.api.permissions import IsOwnerOrReadOnly, IsAdminOrReadOnly
@@ -81,6 +82,14 @@ class ReviewDetail(generics.RetrieveUpdateDestroyAPIView):
 
 #     def delete(self, request, *args, **kwargs):
 #         return self.destroy(request, *args, **kwargs)
+
+class WatchListGenericsListAV(generics.ListAPIView):
+    # permission_classes = [IsAdminOrReadOnly]  # Allow unauthenticated users to read, but authenticated users to create
+    # throttle_classes = [WatchListThrottle]  # Apply throttling to the view
+    queryset = WatchList.objects.all()
+    serializer_class = WatchListSerializer
+    filter_backends = [filters.DjangoFilterBackend]
+    filterset_fields = ['title', 'platform__name']  # Allow filtering by name and platform name
 
 class WatchListAV(APIView):
     permission_classes = [IsAdminOrReadOnly]  # Allow unauthenticated users to read, but authenticated users to create
@@ -283,3 +292,14 @@ class UserReviewList(generics.ListAPIView):
     #     queryset = self.get_queryset()
     #     serializer = self.get_serializer(queryset, many=True)
     #     return Response(serializer.data)
+
+class UserReviewListQueryParam(generics.ListAPIView):
+    serializer_class = ReviewSerializer
+    # permission_classes = [IsAuthenticated]  # Ensure the user is authenticated to view their reviews
+
+    def get_queryset(self):
+        """
+        We need to get the username from the query parameters and then filter by it.
+        """
+        username = self.request.query_params.get('username')
+        return Review.objects.filter(review_user__username=username)
