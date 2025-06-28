@@ -15,6 +15,7 @@ from rest_framework.throttling import UserRateThrottle, AnonRateThrottle, Scoped
 
 from watchlist_app.api.permissions import IsOwnerOrReadOnly, IsAdminOrReadOnly
 from watchlist_app.api.throttles import WatchListThrottle, WatchListDetailThrottle
+from rest_framework import filters as drf_filters
 
 class ReviewList(generics.ListCreateAPIView):
     # queryset = Review.objects.all()
@@ -88,8 +89,10 @@ class WatchListGenericsListAV(generics.ListAPIView):
     # throttle_classes = [WatchListThrottle]  # Apply throttling to the view
     queryset = WatchList.objects.all()
     serializer_class = WatchListSerializer
-    filter_backends = [filters.DjangoFilterBackend]
+    filter_backends = [filters.DjangoFilterBackend, drf_filters.SearchFilter, drf_filters.OrderingFilter]  # Enable filtering, searching, and ordering
+    ordering_fields = ['title', 'platform__name']  # Allow ordering by title and platform name
     filterset_fields = ['title', 'platform__name']  # Allow filtering by name and platform name
+    search_fields = ['title', 'platform__name']  # Allow searching by title and platform name
 
 class WatchListAV(APIView):
     permission_classes = [IsAdminOrReadOnly]  # Allow unauthenticated users to read, but authenticated users to create

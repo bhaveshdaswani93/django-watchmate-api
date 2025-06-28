@@ -54,7 +54,8 @@ class ReviewSerializer(serializers.ModelSerializer):
 
 class WatchListSerializer(serializers.ModelSerializer):
     title_length = serializers.SerializerMethodField()
-    reviews = ReviewSerializer(many=True, read_only=True)
+    platform = serializers.StringRelatedField(read_only=True)  # Assuming you want to show the platform name
+    # reviews = ReviewSerializer(many=True, read_only=True)
     def get_title_length(self, obj):
         return len(obj.title)
     
