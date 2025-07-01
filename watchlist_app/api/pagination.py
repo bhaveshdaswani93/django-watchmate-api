@@ -10,7 +10,7 @@ class WatchListPagination(pagination.PageNumberPagination):
     last_page_strings = ('last', 'end', 'final')
 
 class WatchListLimitOffsetPagination(pagination.LimitOffsetPagination):
-    pass
+    # pass
     default_limit = 2
     limit_query_param = 'limit'
     offset_query_param = 'offset'
@@ -19,4 +19,15 @@ class WatchListLimitOffsetPagination(pagination.LimitOffsetPagination):
     # # default_limit = 10
     # # limit_query_param = 'page_size'
     # # offset_query_param = 'page'
+
+class WatchListCursorPagination(pagination.CursorPagination):
+    pass
+    page_size = 3
+    cursor_query_param = 'c'
+    # page_size_query_param = 'size'
+    # max_page_size = 3
+    # cursor_query_param = 'cursor'
+    # ordering = '-created'  # Assuming 'created' is a field in your model for ordering
+    # ordering = 'name'  # Example of another field to order by
+    # cursor_query_param = 'page'
 

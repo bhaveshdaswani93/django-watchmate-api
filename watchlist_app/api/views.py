@@ -16,7 +16,7 @@ from rest_framework.throttling import UserRateThrottle, AnonRateThrottle, Scoped
 from watchlist_app.api.permissions import IsOwnerOrReadOnly, IsAdminOrReadOnly
 from watchlist_app.api.throttles import WatchListThrottle, WatchListDetailThrottle
 from rest_framework import filters as drf_filters
-from watchlist_app.api.pagination import WatchListPagination, WatchListLimitOffsetPagination
+from watchlist_app.api.pagination import WatchListPagination, WatchListLimitOffsetPagination, WatchListCursorPagination
 
 class ReviewList(generics.ListCreateAPIView):
     # queryset = Review.objects.all()
@@ -94,7 +94,7 @@ class WatchListGenericsListAV(generics.ListAPIView):
     # ordering_fields = ['title', 'platform__name']  # Allow ordering by title and platform name
     # filterset_fields = ['title', 'platform__name']  # Allow filtering by name and platform name
     # search_fields = ['title', 'platform__name']  # Allow searching by title and platform name
-    pagination_class = WatchListLimitOffsetPagination
+    pagination_class = WatchListCursorPagination
 
 class WatchListAV(APIView):
     permission_classes = [IsAdminOrReadOnly]  # Allow unauthenticated users to read, but authenticated users to create
