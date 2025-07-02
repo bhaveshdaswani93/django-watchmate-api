@@ -56,7 +56,7 @@ class LogoutUserTestCase(APITestCase):
         
         # Now, log out using the token
         logout_url = reverse('logout_user')
-        self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + token)
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + token)
         response = self.client.post(logout_url, format='json')
         
         self.assertEqual(response.status_code, status.HTTP_200_OK)

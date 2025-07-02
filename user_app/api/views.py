@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from rest_framework_simplejwt.tokens import RefreshToken
 
-# from user_app import models
+from user_app import models
 from user_app.api.serializers import RegisterUserSerializer
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import permission_classes
@@ -20,13 +20,15 @@ def register_user(request):
             user = serializer.save()
             data['username'] = user.username
             data['email'] = user.email
-            # token = Token.objects.filter(user=user).first()
-            refresh = RefreshToken.for_user(user)
-            if refresh:
-                data['token'] = {
-                    'refresh': str(refresh),
-                    'access': str(refresh.access_token)
-                }
+            token = Token.objects.filter(user=user).first()
+            # refresh = RefreshToken.for_user(user)
+            # if refresh:
+            #     data['token'] = {
+            #         'refresh': str(refresh),
+            #         'access': str(refresh.access_token)
+            #     }
+            if token:
+                data['token'] = token.key
             else:
                 data['token'] = None
 
