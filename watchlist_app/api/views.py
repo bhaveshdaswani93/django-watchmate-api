@@ -22,8 +22,8 @@ class ReviewList(generics.ListCreateAPIView):
     # queryset = Review.objects.all()
     serializer_class = ReviewSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]  # Allow unauthenticated users to read, but authenticated users to create
-    throttle_classes = [ScopedRateThrottle]
-    throttle_scope = 'reviewlist'   # Custom throttle scope for this view
+    # throttle_classes = [ScopedRateThrottle]
+    # throttle_scope = 'reviewlist'   # Custom throttle scope for this view
 
     def get_queryset(self):
         """

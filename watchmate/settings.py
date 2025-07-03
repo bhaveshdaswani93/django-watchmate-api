@@ -156,7 +156,7 @@ REST_FRAMEWORK = {
         'user': '10/day',
         'watchlist': '5/minute',
         'watchlist_detail': '2/minute',
-        'reviewlist': '1/minute',
+        'reviewlist': '2/minute',
     },
     #  'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
     # 'PAGE_SIZE': 2
