@@ -12,8 +12,6 @@ urlpatterns = [
     path('lists-generics', views.WatchListGenericsListAV.as_view(), name='watch-generics-list'),
     path('lists/<int:pk>', views.WatchListDetailAV.as_view(), name='watch-list-detail'),
     path('', include(router.urls)),  # Include the router's URLs
-    # path('platforms', views.StreamPlatformListAV.as_view(), name='stream-platform-list'),
-    # path('platforms/<int:pk>', views.StreamPlatformDetailAV.as_view(), name='streamplatform-detail'),
     path('<int:pk>/reviews', views.ReviewList.as_view(), name='review-list'),
     path('reviews/<int:pk>', views.ReviewDetail.as_view(), name='review-detail'),
     path('users/<str:username>/reviews', views.UserReviewList.as_view(), name='user-review-list'),

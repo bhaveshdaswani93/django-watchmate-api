@@ -1,25 +1,32 @@
 # Create your views here.
-from watchlist_app.models import WatchList, StreamPlatform, Review
-from watchlist_app.api.serializers import WatchListSerializer, StreamPlatformSerializer, ReviewSerializer
-from rest_framework.response import Response
-from rest_framework.decorators import api_view
-from rest_framework import status
-from rest_framework.views import APIView 
+from django_filters import rest_framework as filters
+from rest_framework import filters as drf_filters
 from rest_framework import generics 
 from rest_framework import mixins 
+from rest_framework import status
 from rest_framework import viewsets 
+from rest_framework.decorators import api_view
 from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
-from django_filters import rest_framework as filters
-from rest_framework.throttling import UserRateThrottle, AnonRateThrottle, ScopedRateThrottle
+from rest_framework.response import Response
+from rest_framework.throttling import AnonRateThrottle, ScopedRateThrottle, UserRateThrottle
+from rest_framework.views import APIView 
 
-from watchlist_app.api.permissions import IsOwnerOrReadOnly, IsAdminOrReadOnly
-from watchlist_app.api.throttles import WatchListThrottle, WatchListDetailThrottle
-from rest_framework import filters as drf_filters
-from watchlist_app.api.pagination import WatchListPagination, WatchListLimitOffsetPagination, WatchListCursorPagination
+from watchlist_app.api.pagination import (
+    WatchListCursorPagination,
+    WatchListLimitOffsetPagination,
+    WatchListPagination,
+)
+from watchlist_app.api.permissions import IsAdminOrReadOnly, IsOwnerOrReadOnly
+from watchlist_app.api.serializers import (
+    ReviewSerializer,
+    StreamPlatformSerializer,
+    WatchListSerializer,
+)
+from watchlist_app.api.throttles import WatchListDetailThrottle, WatchListThrottle
+from watchlist_app.models import Review, StreamPlatform, WatchList
 
 class ReviewList(generics.ListCreateAPIView):
-    # queryset = Review.objects.all()
     serializer_class = ReviewSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]  # Allow unauthenticated users to read, but authenticated users to create
     # throttle_classes = [ScopedRateThrottle]
@@ -33,9 +40,6 @@ class ReviewList(generics.ListCreateAPIView):
         if watchlist_id:
             return Review.objects.filter(watchlist=watchlist_id)
         return Review.objects.all()
-        # if watchlist_id:
-            # return self.queryset.filter(watchlist__id=watchlist_id)
-        # return self.queryset
     
     def perform_create(self, serializer):
         """
@@ -61,29 +65,6 @@ class ReviewDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
     permission_classes = [IsOwnerOrReadOnly]  # Custom permission to allow only the owner to update or delete
-
-# class ReviewList(mixins.ListModelMixin, mixins.CreateModelMixin, generics.GenericAPIView):
-#     queryset = Review.objects.all()
-#     serializer_class = ReviewSerializer
-
-#     def get(self, request, *args, **kwargs):
-#         return self.list(request, *args, **kwargs)
-
-#     def post(self, request, *args, **kwargs):
-#         return self.create(request, *args, **kwargs)
-
-# class ReviewDetail(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, mixins.DestroyModelMixin, generics.GenericAPIView):
-#     queryset = Review.objects.all()
-#     serializer_class = ReviewSerializer
-
-#     def get(self, request, *args, **kwargs):
-#         return self.retrieve(request, *args, **kwargs)
-
-#     def put(self, request, *args, **kwargs):
-#         return self.update(request, *args, **kwargs)
-
-#     def delete(self, request, *args, **kwargs):
-#         return self.destroy(request, *args, **kwargs)
 
 class WatchListGenericsListAV(generics.ListAPIView):
     # permission_classes = [IsAdminOrReadOnly]  # Allow unauthenticated users to read, but authenticated users to create
@@ -155,12 +136,6 @@ class StreamPlatformModelViewSet(viewsets.ModelViewSet):
     queryset = StreamPlatform.objects.all()
     serializer_class = StreamPlatformSerializer
     lookup_field = 'pk'  # Default is 'pk', but can be changed to 'slug' or any other field if needed
-
-    # def get_serializer_context(self):
-    #     return {'request': self.request}
-    
-    # def perform_create(self, serializer):
-    #     serializer.save()
 
 class StreamPlatformViewSet(viewsets.ViewSet):
     permission_classes = [IsAdminOrReadOnly]  # Add your permission classes here if needed
@@ -241,44 +216,6 @@ class StreamPlatformDetailAV(APIView):
         platform.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-# @api_view(['GET', 'POST'])
-# def movie_list(request):
-#     if request.method == 'POST':
-#         print("Data received:", request.data)  # Debugging line to check incoming data
-#         serializer = WatchListSerializer(data=request.data)
-#         if serializer.is_valid():
-#             serializer.save()
-#             return Response(serializer.data, status=status.HTTP_201_CREATED)
-#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
-#     # If the request method is GET, return the list of movies
-#     movies = Movie.objects.all()
-#     serializer = WatchListSerializer(movies, many=True)
-#     data = {'data': serializer.data}
-#     return Response(data)
-
-# @api_view(['GET', 'PUT', 'DELETE'])
-# def movie_detail(request, pk):
-#     try:
-#         movie = Movie.objects.get(pk=pk)
-#     except Movie.DoesNotExist:
-#         return Response({'error': 'Movie not found'}, status=status.HTTP_404_NOT_FOUND)
-    
-#     if request.method == 'PUT':
-#         serializer = WatchListSerializer(movie, data=request.data)
-#         if serializer.is_valid():
-#             serializer.save()
-#             return Response(serializer.data, status=status.HTTP_200_OK)
-#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-#     elif request.method == 'DELETE':
-#         movie.delete()
-#         return Response(status=status.HTTP_204_NO_CONTENT)
-
-#     serializer = WatchListSerializer(movie)
-#     data = {'data': serializer.data}
-#     return Response(data)
-
-
 class UserReviewList(generics.ListAPIView):
     serializer_class = ReviewSerializer
     # permission_classes = [IsAuthenticated]  # Ensure the user is authenticated to view their reviews
@@ -289,14 +226,6 @@ class UserReviewList(generics.ListAPIView):
         """
         username = self.kwargs.get('username')
         return Review.objects.filter(review_user__username=username)
-
-    # def list(self, request, *args, **kwargs):
-    #     """
-    #     Override the list method to include the user's reviews.
-    #     """
-    #     queryset = self.get_queryset()
-    #     serializer = self.get_serializer(queryset, many=True)
-    #     return Response(serializer.data)
 
 class UserReviewListQueryParam(generics.ListAPIView):
     serializer_class = ReviewSerializer
